@@ -1,4 +1,4 @@
-# **Autosint - An modular OSINT API**
+# **HexaOSINT - An modular OSINT API**
 
 A modular API for performing OSINT (Open Source Intelligence) searches, building dork queries, and retrieving structured results from search engines such as Google via SerpAPI.
 The architecture follows a **package-by-feature** structure, separating controllers, routes, schemas, and services.
