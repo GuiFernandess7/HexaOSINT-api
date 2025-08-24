@@ -1,7 +1,6 @@
 # **HexaOSINT - A modular OSINT API**
 
-A modular API for performing OSINT (Open Source Intelligence) searches, building dork queries, and retrieving structured results from search engines such as Google via SerpAPI.
-The architecture follows a **package-by-feature** structure, separating controllers, routes, schemas, and services.
+HexaOSINT is an OSINT API that combines multiple methods (text and image inputs) to search social media and files across the web. It processes the provided data to generate queries and retrieve relevant links from various sources. The architecture follows a **package-by-feature** structure, separating controllers, routes, schemas, and services.
 
 ---
 
@@ -25,11 +24,11 @@ The architecture follows a **package-by-feature** structure, separating controll
 ```
 source/
 │
-├── auth/                 # JWT authentication configuration
-├── database/            # Database configuration and models
+├── auth/               # JWT authentication configuration
+├── database/           # Database configuration and models
 │   ├── models/         # SQLAlchemy models (ScanHistory, TargetResult)
 │   └── base.py         # Base model and database session
-├── enums/               # Enum definitions for request validation
+├── enums/              # Enum definitions for request validation
 │   ├── target_type.py  # Target types (company, person)
 │   ├── search_type.py  # Search types (google_search)
 │   ├── engine_type.py  # Search engines (google, bing, duckduckgo)
@@ -43,7 +42,7 @@ source/
 │   ├── dorkgen/        # Dork query generation strategies
 │   ├── facecrawler/    # Face recognition search service
 │   └── serpapi/        # Search engine integration
-├── main.py              # Application entry point
+├── main.py             # Application entry point
 └── ...
 ```
 
