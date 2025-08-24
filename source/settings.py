@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     DATABASE_USER: Optional[str] = ""
     DATABASE_PASSWORD: Optional[str] = ""
     DATABASE_HOST: Optional[str] = ""
-    DATABASE_PORT: Optional[int] = ""
+    DATABASE_PORT: int = Field(default=5432)
     DATABASE_SCHEMA: Optional[str] = ""
 
     DB_TARGET_RESULT: str
