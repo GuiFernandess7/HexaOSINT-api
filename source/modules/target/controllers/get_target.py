@@ -2,12 +2,8 @@ from modules.target.schemas import (
     TargetTextSearchSchema,
     ListTargetsResponse,
     TargetImageSearchSchema,
-    TargetImageSchemaResponse,
     ListTargetsImageResponse,
     TargetSendImageSchemaResponse,
-)
-from services.facecheck.facecheck_service import (
-    get_facecrawler_service,
 )
 from modules.target.domain.target_search import (
     TargetSearchService,

@@ -13,11 +13,8 @@ The architecture follows a **package-by-feature** structure, separating controll
 - Returns structured search results.
 - Designed to integrate with a PostgreSQL database for persisting:
 
-  - Targets
   - Search history
   - Processed results
-  - Scraped content
-  - Audit logs
 
 ---
 
@@ -44,11 +41,8 @@ source/
 
 The main entities and relationships:
 
-- **targets** — Main OSINT search subjects.
 - **scan_history** — Each scan execution and its metadata.
 - **processed_results** — Parsed results from scans.
-- **scraped_content** — Optional detailed extracted content.
-- **audit_logs** — Actions log for tracking operations.
 
 ---
 
@@ -59,10 +53,6 @@ The main entities and relationships:
 3. **Execute search** via `SerpAPIController`.
 4. **Return structured results** as JSON.
 5. (Planned) Persist results to PostgreSQL following the relationship chain:
-
-   ```
-   targets → scan_history → processed_results → scraped_content
-   ```
 
 ---
 

@@ -11,7 +11,7 @@ from services.dorkgen.dork_generator import build_combined_dork
 from database.repository import BaseRepository
 from database.models.db_models import ScanHistory
 from database.session import get_session
-from services.facecheck.facecheck_service import (
+from source.services.facecrawler.facecrawler_service import (
     get_facecrawler_service,
 )
 import os
