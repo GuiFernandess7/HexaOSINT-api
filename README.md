@@ -108,54 +108,6 @@ The main entities and relationships:
 
 ---
 
-## **Installation**
-
-```bash
-# Install dependencies from pyproject.toml
-uv pip install -e .
-
-# Or install without editable mode
-uv pip install .
-```
-
----
-
-## **Running the API**
-
-```bash
-uv run uvicorn source.main:app --reload
-```
-
----
-
-## **Environment Variables**
-
-Create a `.env` file with:
-
-```
-# SerpAPI
-SERPAPI_KEY=your_serpapi_key
-
-# FaceCrawler API
-FACECRAWLER_KEY=your_facecrawler_key
-SITE_URL=https://facecrawler-api-url.com
-
-# PostgreSQL Connection
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_password
-POSTGRES_DB=osint_db
-
-# Table Names
-DB_TARGET=target
-DB_TARGET_RESULT=target_results
-DB_SCAN_HISTORY=scan_history
-DB_AUDIT_LOGS=audit_logs
-```
-
----
-
 ## **License**
 
 MIT License.
