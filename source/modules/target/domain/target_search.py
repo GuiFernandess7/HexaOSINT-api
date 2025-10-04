@@ -16,11 +16,12 @@ from services.facecrawler.facecrawler_service import (
 )
 import os
 from typing import List
+from uuid import UUID
 
 
 class TargetSearchService:
     def text_search(
-        self, request: TargetTextSearchSchema
+        self, request: TargetTextSearchSchema, user_id: UUID
     ) -> List[TargetTextSchemaResponse]:
         dork_query = build_combined_dork(
             target_name=request.name, categories=request.categories
@@ -41,6 +42,7 @@ class TargetSearchService:
             scan_repo.create(
                 session=session,
                 obj_in=CreateScanSchema(
+                    user_id=user_id,
                     query=dork_query,
                     engine=request.search_engine.value,
                     search_type="person",
@@ -69,7 +71,7 @@ class TargetImageService:
     def __init__(self):
         self.client = get_facecrawler_service()
 
-    def send_image(self, target_image: str) -> TargetSendImageSchemaResponse:
+    def send_image(self, target_image: str, user_id: UUID) -> TargetSendImageSchemaResponse:
         response = self.client.handler.send_image(target_image)
 
         if response.status_code != 200:
@@ -90,7 +92,7 @@ class TargetImageService:
         )
 
     def check_image_search(
-        self, request: TargetImageSearchSchema
+        self, request: TargetImageSearchSchema, user_id: UUID
     ) -> ListTargetsImageResponse:
         response = self.client.check_progress(request.id_search, demo=request.demo)
 

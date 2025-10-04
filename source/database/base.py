@@ -1,6 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 db_user = os.getenv("DATABASE_USER", "user")
 db_password = os.getenv("DATABASE_PASSWORD", "password")

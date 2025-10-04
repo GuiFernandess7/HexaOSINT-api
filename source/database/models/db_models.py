@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional, List
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import String, JSON, Boolean
+from sqlalchemy import String, JSON, Boolean, DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from .base_model import Base
@@ -9,11 +9,34 @@ from settings import settings
 from datetime import datetime
 
 
+class User(Base):
+    __tablename__ = "users"
+    __table_args__ = {"extend_existing": settings.DATABASE_SCHEMA}
+
+    user_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    last_login: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
+    # Relationship to scan history
+    scans: Mapped[List["ScanHistory"]] = relationship(
+        "ScanHistory", back_populates="user", cascade="all, delete-orphan"
+    )
+
+
 class ScanHistory(Base):
     __tablename__ = settings.DB_SCAN_HISTORY
     __table_args__ = {"extend_existing": settings.DATABASE_SCHEMA}
 
     scan_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.user_id"), nullable=False
+    )
     search_type: Mapped[str] = mapped_column(nullable=False)
     engine: Mapped[str] = mapped_column(nullable=False)
     query: Mapped[Optional[str]] = mapped_column(nullable=True)
@@ -22,6 +45,10 @@ class ScanHistory(Base):
     status: Mapped[str] = mapped_column(nullable=False, default="STARTED")
     timestamp: Mapped[datetime] = mapped_column(default=datetime.utcnow, nullable=False)
 
+    # Relationship to user
+    user: Mapped["User"] = relationship("User", back_populates="scans")
+    
+    # Relationship to results
     results: Mapped[List["TargetResult"]] = relationship(
         "TargetResult", back_populates="scan", cascade="all, delete-orphan"
     )

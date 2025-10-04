@@ -45,6 +45,7 @@ class TargetImageSendSchema(BaseModel):
 
 
 class CreateScanSchema(BaseModel):
+    user_id: UUID
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     query: str
     engine: str
