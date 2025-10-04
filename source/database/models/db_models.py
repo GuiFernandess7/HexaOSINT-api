@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = settings.DB_USER
     __table_args__ = {"extend_existing": settings.DATABASE_SCHEMA}
 
     user_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -35,7 +35,7 @@ class ScanHistory(Base):
 
     scan_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("users.user_id"), nullable=False
+        ForeignKey(f"{settings.DB_USER}.user_id"), nullable=False
     )
     search_type: Mapped[str] = mapped_column(nullable=False)
     engine: Mapped[str] = mapped_column(nullable=False)
