@@ -1,5 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import FastAPI, Depends, HTTPException, status, Header
 from sqlalchemy.orm import Session
 import jwt
 import dotenv
@@ -12,27 +11,32 @@ from auth.schemas import TokenData
 
 dotenv.load_dotenv()
 
-security = HTTPBearer()
 SECRET_KEY = os.getenv("SECRET_AUTH_KEY")
 
 
-def verify_jwt(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    """Verify JWT token and return payload."""
-    token = credentials.credentials
+def verify_jwt(x_user_jwt: str = Header(..., alias="X-User-JWT")) -> dict:
+    """Verify JWT token from custom header and return payload."""
+    if not x_user_jwt:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="X-User-JWT header is required",
+            headers={"X-User-JWT": "Required"},
+        )
+    
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(x_user_jwt, SECRET_KEY, algorithms=["HS256"])
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Token expirado",
-            headers={"WWW-Authenticate": "Bearer"},
+            headers={"X-User-JWT": "Invalid"},
         )
     except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Token inválido",
-            headers={"WWW-Authenticate": "Bearer"},
+            headers={"X-User-JWT": "Invalid"},
         )
 
 
