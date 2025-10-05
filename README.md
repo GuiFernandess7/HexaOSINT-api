@@ -50,13 +50,21 @@ source/
 
 ## **API Endpoints**
 
-### **Text Search**
+### **Authentication**
+- `POST /auth/register` - Register new user
+- `POST /auth/login` - Login and get JWT + refresh tokens
+- `POST /auth/refresh` - Refresh access token using refresh token
+- `POST /auth/logout` - Logout and revoke tokens
+- `GET /auth/me` - Get current user info
+- `GET /auth/verify-token` - Verify JWT token validity
+
+### **Text Search** (Requires Authentication)
 - `POST /target/text-search` - Perform text-based OSINT searches
   - Supports multiple categories: social, files, logs
   - Configurable search engines and countries
   - Target types: company, person
 
-### **Image Search**
+### **Image Search** (Requires Authentication)
 - `POST /target/image-search/send` - Upload image for face recognition
 - `POST /target/image-search/receive` - Retrieve face recognition results
 
@@ -66,7 +74,18 @@ source/
 
 The main entities and relationships:
 
+- **users** — User accounts and authentication:
+  - Username, email, hashed password
+  - Active status and admin privileges
+  - Creation and last login timestamps
+
+- **refresh_tokens** — Refresh tokens for token renewal:
+  - Secure tokens for access token refresh
+  - Device and IP tracking
+  - Expiration and revocation management
+
 - **scan_history** — Each scan execution with metadata:
+  - User association (foreign key)
   - Search type, engine, query
   - Image metadata for face searches
   - Status tracking and timestamps
@@ -81,18 +100,27 @@ The main entities and relationships:
 
 ## **Example Flow**
 
+### **Authentication Flow:**
+1. **Register user** via `/auth/register` with username, email, and password.
+2. **Login** via `/auth/login` to receive JWT access token and refresh token.
+3. **Use access token** in `X-User-JWT` header for protected endpoints.
+4. **Refresh token** via `/auth/refresh` when access token expires.
+5. **Logout** via `/auth/logout` to revoke tokens.
+
 ### **Text Search Flow:**
-1. **Send request** with target data and categories (social, files, logs).
-2. **Build dork query** using `DorkGen` service with strategic patterns.
-3. **Execute search** via `SerpAPIController` with selected engine.
-4. **Return structured results** as JSON with metadata.
-5. **Persist results** to PostgreSQL following the relationship chain.
+1. **Authenticate** with JWT token in `X-User-JWT` header.
+2. **Send request** with target data and categories (social, files, logs).
+3. **Build dork query** using `DorkGen` service with strategic patterns.
+4. **Execute search** via `SerpAPIController` with selected engine.
+5. **Return structured results** as JSON with metadata.
+6. **Persist results** to PostgreSQL associated with authenticated user.
 
 ### **Image Search Flow:**
-1. **Upload image** via `/target/image-search/send` endpoint.
-2. **Process image** using FaceCrawler service integration.
-3. **Track progress** and retrieve results via `/target/image-search/receive`.
-4. **Store results** in database with image metadata.
+1. **Authenticate** with JWT token in `X-User-JWT` header.
+2. **Upload image** via `/target/image-search/send` endpoint.
+3. **Process image** using FaceCrawler service integration.
+4. **Track progress** and retrieve results via `/target/image-search/receive`.
+5. **Store results** in database with image metadata and user association.
 
 ---
 
@@ -103,8 +131,66 @@ The main entities and relationships:
 - **SQLAlchemy** — ORM for PostgreSQL with relationship management.
 - **SerpAPI** — Multi-engine search API integration (Google, Bing, DuckDuckGo).
 - **FaceCrawler** — Face recognition and image search service.
-- **JWT Authentication** — Secure endpoint access control.
+- **JWT Authentication** — Secure endpoint access control with refresh tokens.
+- **Refresh Tokens** — Secure token renewal and logout management.
 - **uv** — Modern Python package and environment manager.
+
+---
+
+## **Installation**
+
+```bash
+# Install dependencies from pyproject.toml
+uv pip install -e .
+
+# Or install without editable mode
+uv pip install .
+```
+
+---
+
+## **Running the API**
+
+```bash
+uv run uvicorn source.main:app --reload
+```
+
+---
+
+## **Environment Variables**
+
+Create a `.env` file with:
+
+```
+# JWT Authentication
+SECRET_AUTH_KEY=your_super_secret_jwt_key_here
+
+# SerpAPI
+SERPAPI_KEY=your_serpapi_key
+
+# FaceCrawler API
+FACECRAWLER_KEY=your_facecrawler_key
+SITE_URL=https://facecrawler-api-url.com
+
+# PostgreSQL Connection
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=osint_db
+
+# Table Names
+DB_TARGET_RESULT=target_results
+DB_SCAN_HISTORY=scan_history
+```
+
+---
+
+## **Authentication Setup**
+
+Para configuração detalhada e uso da autenticação, consulte [AUTHENTICATION.md](source/AUTHENTICATION.md).
+
+Para informações sobre refresh tokens, consulte [REFRESH_TOKENS.md](source/REFRESH_TOKENS.md).
 
 ---
 

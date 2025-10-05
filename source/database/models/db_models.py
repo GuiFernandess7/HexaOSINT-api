@@ -6,7 +6,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from .base_model import Base
 from settings import settings
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class User(Base):
@@ -27,6 +27,31 @@ class User(Base):
     scans: Mapped[List["ScanHistory"]] = relationship(
         "ScanHistory", back_populates="user", cascade="all, delete-orphan"
     )
+    
+    # Relationship to refresh tokens
+    refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
+        "RefreshToken", back_populates="user", cascade="all, delete-orphan"
+    )
+
+
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+    __table_args__ = {"extend_existing": settings.DATABASE_SCHEMA}
+
+    token_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(f"{settings.DB_USER}.user_id"), nullable=False
+    )
+    token: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    is_revoked: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    revoked_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    device_info: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    ip_address: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)
+
+    # Relationship to user
+    user: Mapped["User"] = relationship("User", back_populates="refresh_tokens")
 
 
 class ScanHistory(Base):
