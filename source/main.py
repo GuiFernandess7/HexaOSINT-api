@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from modules.target.routes.target_routes import router as target_router
-from auth.routes import router as auth_router
+from auth.routes import router as auth_router, limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
 import dotenv
 
 dotenv.load_dotenv()
@@ -9,6 +11,9 @@ app = FastAPI(
     description="A modular OSINT API for text and image searches",
     version="1.0.0"
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 @app.get("/health-check")
 def health_check():

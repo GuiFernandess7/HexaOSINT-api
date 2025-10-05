@@ -8,12 +8,26 @@ from auth.schemas import (
 from auth.auth_service import AuthService
 from auth.config import get_current_active_user
 from database.models.db_models import User
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
+limiter = Limiter(key_func=get_remote_address)
+
+def get_login_key(request: Request):
+    ip_address = get_remote_address(request)
+    
+    try:
+        return f"login:{ip_address}"
+    except:
+        return f"login:{ip_address}"
+
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("3 per minute")
+def register_user(request: Request, user_data: UserCreate, db: Session = Depends(get_db)):
     """Register a new user."""
     try:
         auth_service = AuthService(db)
@@ -32,6 +46,7 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
+@limiter.limit("5 per minute", key_func=get_login_key)
 def login_user(login_data: UserLogin, request: Request, db: Session = Depends(get_db)):
     """Login user and return JWT token."""
     try:
@@ -81,6 +96,7 @@ def verify_token(current_user: User = Depends(get_current_active_user)):
 
 
 @router.post("/refresh", response_model=Token)
+@limiter.limit("10 per minute")
 def refresh_token(
     refresh_request: RefreshTokenRequest, 
     request: Request,
