@@ -29,13 +29,13 @@ def verify_jwt(x_user_jwt: str = Header(..., alias="X-User-JWT")) -> dict:
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail="Token expirado",
+            detail="Expired token",
             headers={"X-User-JWT": "Invalid"},
         )
     except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail="Token inválido",
+            detail="Invalid token",
             headers={"X-User-JWT": "Invalid"},
         )
 
