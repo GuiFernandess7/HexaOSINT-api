@@ -55,9 +55,9 @@ class AuthService:
         
         return db_user
     
-    def authenticate_user(self, username: str, password: str) -> Optional[User]:
+    def authenticate_user(self, email: str, password: str) -> Optional[User]:
         """Authenticate a user with username and password."""
-        user = self.db.query(User).filter(User.username == username).first()
+        user = self.db.query(User).filter(User.email == email).first()
         
         if not user:
             return None

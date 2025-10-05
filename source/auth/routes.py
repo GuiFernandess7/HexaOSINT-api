@@ -36,7 +36,7 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
     """Login user and return JWT token."""
     try:
         auth_service = AuthService(db)
-        user = auth_service.authenticate_user(login_data.username, login_data.password)
+        user = auth_service.authenticate_user(login_data.email, login_data.password)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

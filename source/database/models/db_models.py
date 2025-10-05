@@ -33,7 +33,7 @@ class User(Base):
 
 
 class RefreshToken(Base):
-    __tablename__ = "refresh_tokens"
+    __tablename__ = settings.DB_REFRESH_TOKEN
     __table_args__ = {"extend_existing": settings.DATABASE_SCHEMA}
 
     token_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)

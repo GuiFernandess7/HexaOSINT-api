@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     DB_TARGET_RESULT: str
     DB_SCAN_HISTORY: str
     DB_USER: str
+    DB_REFRESH_TOKEN: str
     SECRET_AUTH_KEY: str
 
     SERPAPI_KEY: str
