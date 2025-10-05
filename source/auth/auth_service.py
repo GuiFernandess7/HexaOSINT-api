@@ -39,7 +39,7 @@ class AuthService:
             if existing_user.username == user_data.username or existing_user.email == user_data.email:
                 raise ValueError("User already exists.")
         
-        # Create new user
+
         hashed_password = self.hash_password(user_data.password)
         db_user = User(
             username=user_data.username,
@@ -68,7 +68,6 @@ class AuthService:
         if not user.is_active:
             return None
         
-        # Update last login
         user.last_login = datetime.utcnow()
         self.db.commit()
         
@@ -79,7 +78,7 @@ class AuthService:
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
         else:
-            expire = datetime.utcnow() + timedelta(hours=24)  # Default 24 hours
+            expire = datetime.utcnow() + timedelta(hours=24) 
         
         to_encode = {
             "sub": str(user.user_id),
@@ -108,13 +107,10 @@ class AuthService:
     
     def generate_refresh_token(self, user: User, device_info: Optional[str] = None, ip_address: Optional[str] = None) -> str:
         """Generate a new refresh token for the user."""
-        # Generate a secure random token
         refresh_token = secrets.token_urlsafe(64)
         
-        # Set expiration (30 days from now)
         expires_at = datetime.utcnow() + timedelta(days=30)
         
-        # Create refresh token record
         db_refresh_token = RefreshToken(
             user_id=user.user_id,
             token=refresh_token,

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-# TODO: teste
 
 
 class DorkingStrategy(ABC):
@@ -14,7 +13,6 @@ class SocialDorking(DorkingStrategy):
         parts = [
             f'site:facebook.com "{target_name}"',
             f'site:twitter.com "{target_name}"',
-            # ...
         ]
         return " OR ".join(parts)
 
@@ -24,7 +22,6 @@ class FilesDorking(DorkingStrategy):
         parts = [
             f'"{target_name}" filetype:pdf',
             f'"{target_name}" filetype:xls',
-            # ...
         ]
         return " OR ".join(parts)
 
@@ -33,7 +30,6 @@ class DorkingFactory:
     strategies = {
         "social": SocialDorking,
         "files": FilesDorking,
-        # ...
     }
 
     @classmethod

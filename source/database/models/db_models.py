@@ -23,12 +23,10 @@ class User(Base):
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     last_login: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
-    # Relationship to scan history
     scans: Mapped[List["ScanHistory"]] = relationship(
         "ScanHistory", back_populates="user", cascade="all, delete-orphan"
     )
     
-    # Relationship to refresh tokens
     refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
         "RefreshToken", back_populates="user", cascade="all, delete-orphan"
     )
@@ -50,7 +48,6 @@ class RefreshToken(Base):
     device_info: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     ip_address: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)
 
-    # Relationship to user
     user: Mapped["User"] = relationship("User", back_populates="refresh_tokens")
 
 
@@ -70,10 +67,7 @@ class ScanHistory(Base):
     status: Mapped[str] = mapped_column(nullable=False, default="STARTED")
     timestamp: Mapped[datetime] = mapped_column(default=datetime.utcnow, nullable=False)
 
-    # Relationship to user
     user: Mapped["User"] = relationship("User", back_populates="scans")
-    
-    # Relationship to results
     results: Mapped[List["TargetResult"]] = relationship(
         "TargetResult", back_populates="scan", cascade="all, delete-orphan"
     )

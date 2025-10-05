@@ -43,7 +43,7 @@ class Token(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
-    expires_in: int = 86400  # 24 hours in seconds
+    expires_in: int = 86400 
     user: UserResponse
 
 

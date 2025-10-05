@@ -11,7 +11,6 @@ class Settings(BaseSettings):
         env_prefix="", env_file=".env", env_file_encoding="utf-8"
     )
 
-    # DATA CONFIGURATION POSTGRESQL
     DATABASE_NAME: Optional[str] = ""
     DATABASE_USER: Optional[str] = ""
     DATABASE_PASSWORD: Optional[str] = ""
@@ -24,7 +23,6 @@ class Settings(BaseSettings):
     DB_USER: str
     SECRET_AUTH_KEY: str
 
-    # External API Keys
     SERPAPI_KEY: str
     FACECRAWLER_KEY: str
     SITE_URL: str

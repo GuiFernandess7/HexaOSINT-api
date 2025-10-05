@@ -46,7 +46,6 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
         
         access_token = auth_service.create_access_token(user)
         
-        # Generate refresh token
         refresh_token = auth_service.generate_refresh_token(
             user, 
             device_info=request.headers.get("User-Agent"),
@@ -57,7 +56,7 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "bearer",
-            "expires_in": 86400,  # 24 hours
+            "expires_in": 86400, 
             "user": user
         }
     except HTTPException:
@@ -99,24 +98,21 @@ def refresh_token(
                 headers={"X-User-JWT": "Invalid"},
             )
         
-        # Generate new access token
         new_access_token = auth_service.create_access_token(user)
         
-        # Optionally generate new refresh token (rotate refresh token)
         new_refresh_token = auth_service.generate_refresh_token(
             user,
             device_info=request.headers.get("User-Agent"),
             ip_address=request.client.host if request.client else None
         )
         
-        # Revoke old refresh token
         auth_service.revoke_refresh_token(refresh_request.refresh_token)
         
         return {
             "access_token": new_access_token,
             "refresh_token": new_refresh_token,
             "token_type": "bearer",
-            "expires_in": 86400,  # 24 hours
+            "expires_in": 86400,  
             "user": user
         }
     except HTTPException:
@@ -138,7 +134,6 @@ def logout(
     try:
         auth_service = AuthService(db)
         
-        # If specific refresh token provided, revoke only that one
         if logout_request.refresh_token:
             success = auth_service.revoke_refresh_token(logout_request.refresh_token)
             if not success:
@@ -148,7 +143,6 @@ def logout(
                 )
             return {"message": "Logged out successfully"}
         
-        # If no specific token, revoke all user tokens
         revoked_count = auth_service.revoke_all_user_tokens(current_user.user_id)
         return {
             "message": "Logged out successfully",
