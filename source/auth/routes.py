@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from database.session import get_db
 from auth.schemas import (
@@ -32,7 +33,7 @@ def register_user(request: Request, user_data: UserCreate, db: Session = Depends
     try:
         auth_service = AuthService(db)
         user = auth_service.create_user(user_data)
-        return user
+        return {"message": "User registered successfully.", "user": user}
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -53,10 +54,9 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
         auth_service = AuthService(db)
         user = auth_service.authenticate_user(login_data.email, login_data.password)
         if not user:
-            raise HTTPException(
+            return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
-                headers={"WWW-Authenticate": "Bearer"},
+                content={"message": "Incorrect username or password"}
             )
         
         access_token = auth_service.create_access_token(user)
@@ -78,10 +78,10 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
-        )
+        return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={"message": "An error occurred while logging in."}
+            )
 
 
 @router.get("/me", response_model=UserResponse)
