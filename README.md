@@ -75,7 +75,7 @@ source/
 The main entities and relationships:
 
 - **users** — User accounts and authentication:
-  - Username, email, hashed password
+  - First name, last name, email, hashed password
   - Active status and admin privileges
   - Creation and last login timestamps
 
@@ -101,7 +101,7 @@ The main entities and relationships:
 ## **Example Flow**
 
 ### **Authentication Flow:**
-1. **Register user** via `/auth/register` with username, email, and password.
+1. **Register user** via `/auth/register` with first_name, last_name, email, and password.
 2. **Login** via `/auth/login` to receive JWT access token and refresh token.
 3. **Use access token** in `X-User-JWT` header for protected endpoints.
 4. **Refresh token** via `/auth/refresh` when access token expires.

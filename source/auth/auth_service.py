@@ -32,17 +32,18 @@ class AuthService:
     def create_user(self, user_data: UserCreate) -> User:
         """Create a new user."""
         existing_user = self.db.query(User).filter(
-            (User.username == user_data.username) | (User.email == user_data.email)
+            User.email == user_data.email
         ).first()
         
         if existing_user:
-            if existing_user.username == user_data.username or existing_user.email == user_data.email:
-                raise ValueError("User already exists.")
+            raise ValueError("User already exists with this email.")
         
 
         hashed_password = self.hash_password(user_data.password)
+        
         db_user = User(
-            username=user_data.username,
+            first_name=user_data.first_name,
+            last_name=user_data.last_name,
             email=user_data.email,
             hashed_password=hashed_password,
             is_active=True,
@@ -56,7 +57,7 @@ class AuthService:
         return db_user
     
     def authenticate_user(self, email: str, password: str) -> Optional[User]:
-        """Authenticate a user with username and password."""
+        """Authenticate a user with email and password."""
         user = self.db.query(User).filter(User.email == email).first()
         
         if not user:
@@ -82,7 +83,7 @@ class AuthService:
         
         to_encode = {
             "sub": str(user.user_id),
-            "username": user.username,
+            "email": user.email,
             "is_admin": user.is_admin,
             "exp": expire
         }
@@ -94,9 +95,9 @@ class AuthService:
         """Get a user by their ID."""
         return self.db.query(User).filter(User.user_id == user_id).first()
     
-    def get_user_by_username(self, username: str) -> Optional[User]:
-        """Get a user by their username."""
-        return self.db.query(User).filter(User.username == username).first()
+    def get_user_by_email(self, email: str) -> Optional[User]:
+        """Get a user by their email."""
+        return self.db.query(User).filter(User.email == email).first()
     
     def update_user_last_login(self, user_id: uuid.UUID):
         """Update the last login timestamp for a user."""

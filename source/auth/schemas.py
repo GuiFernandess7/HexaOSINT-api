@@ -5,19 +5,22 @@ from uuid import UUID
 
 
 class UserBase(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
+    first_name: str = Field(..., min_length=1, max_length=25)
+    last_name: str = Field(..., min_length=1, max_length=25)
 
 
 class UserCreate(UserBase):
     email: EmailStr
-    username: str = Field(..., min_length=3, max_length=50)
+    first_name: str = Field(..., min_length=1, max_length=25)
+    last_name: str = Field(..., min_length=1, max_length=25)
     password: str = Field(..., min_length=8, max_length=100)
 
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = Field(None, min_length=3, max_length=50)
     email: Optional[EmailStr] = None
+    first_name: Optional[str] = Field(None, min_length=1, max_length=25)
+    last_name: Optional[str] = Field(None, min_length=1, max_length=25)
     is_active: Optional[bool] = None
     is_admin: Optional[bool] = None
 
@@ -58,5 +61,5 @@ class LogoutRequest(BaseModel):
 
 class TokenData(BaseModel):
     user_id: Optional[UUID] = None
-    username: Optional[str] = None
+    email: Optional[str] = None
     is_admin: Optional[bool] = None
