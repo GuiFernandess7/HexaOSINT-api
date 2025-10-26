@@ -68,7 +68,7 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
         )
         
         return {
-            "detail": "Login successful.",
+            "message": "Login successful.",
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "bearer",
