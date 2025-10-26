@@ -33,22 +33,23 @@ def register_user(request: Request, user_data: UserCreate, db: Session = Depends
     """Register a new user."""
     try:
         auth_service = AuthService(db)
-        user = auth_service.create_user(user_data)
+        user = auth_service.create_user(user_data) 
+        if user is None:
+            auth_logger.error(f"[VALUE ERROR] User already exists.", exc_info=True)
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"message": "Incorrect email or password"}
+            )
         return SignUpResponse(
             message="User registered successfully.", 
             user=user
         )
+
     except ValueError as e:
         auth_logger.error(f"[VALUE ERROR] An expected error has occurred: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": f"An expected error has occurred."}
-        )
-    except Exception as e:
-        auth_logger.error(f"[EXCEPTION] An unexpected error has occurred: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"message": "An unexpected error has occurred."}
         )
 
 

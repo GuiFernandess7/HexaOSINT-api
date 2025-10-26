@@ -29,16 +29,15 @@ class AuthService:
             hashed_password.encode('utf-8')
         )
     
-    def create_user(self, user_data: UserCreate) -> User:
+    def create_user(self, user_data: UserCreate) -> User | None:
         """Create a new user."""
         existing_user = self.db.query(User).filter(
             User.email == user_data.email
         ).first()
         
         if existing_user:
-            raise ValueError("An expected error has occurred.")
+            return None
         
-
         hashed_password = self.hash_password(user_data.password)
         
         db_user = User(
