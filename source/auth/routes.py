@@ -56,7 +56,7 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
         if not user:
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"message": "Incorrect username or password"}
+                content={"message": "Incorrect email or password"}
             )
         
         access_token = auth_service.create_access_token(user)
