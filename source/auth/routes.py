@@ -39,14 +39,16 @@ def register_user(request: Request, user_data: UserCreate, db: Session = Depends
             user=user
         )
     except ValueError as e:
+        auth_logger.error(f"[VALUE ERROR] An expected error has occurred: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            content={"message": f"An expected error has occurred."}
         )
     except Exception as e:
+        auth_logger.error(f"[EXCEPTION] An unexpected error has occurred: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            content={"message": "An unexpected error has occurred."}
         )
 
 
