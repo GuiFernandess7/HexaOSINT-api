@@ -12,6 +12,7 @@ from database.models.db_models import User
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from config_logging import auth_logger
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -53,12 +54,15 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
     try:
         auth_service = AuthService(db)
         user = auth_service.authenticate_user(login_data.email, login_data.password)
+        
         if user is None:
+            auth_logger.warning(f"Login failed for email: {login_data.email}")
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={"message": "Incorrect email or password"}
             )
         
+        auth_logger.info(f"User logged in successfully: {user.email}")
         access_token = auth_service.create_access_token(user)
         
         refresh_token = auth_service.generate_refresh_token(
@@ -78,9 +82,10 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
     except HTTPException:
         raise
     except Exception as e:
+        auth_logger.error(f"Login error for email {login_data.email}: {str(e)}", exc_info=True)
         return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"message": "An error occurred while logging in."}
+                content={"message": "Incorrect email or password"}
             )
 
 

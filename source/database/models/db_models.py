@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional, List
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import String, JSON, Boolean, DateTime
+from sqlalchemy import String, Boolean, DateTime, JSON
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from .base_model import Base
