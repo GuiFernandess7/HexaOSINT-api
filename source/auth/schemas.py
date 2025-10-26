@@ -6,11 +6,9 @@ from uuid import UUID
 
 class UserBase(BaseModel):
     email: EmailStr
-    first_name: str = Field(..., min_length=1, max_length=25)
-    last_name: str = Field(..., min_length=1, max_length=25)
 
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
     email: EmailStr
     first_name: str = Field(..., min_length=1, max_length=25)
     last_name: str = Field(..., min_length=1, max_length=25)
@@ -25,8 +23,11 @@ class UserUpdate(BaseModel):
     is_admin: Optional[bool] = None
 
 
-class UserResponse(UserBase):
+class UserResponse(BaseModel):
     user_id: UUID
+    email: EmailStr
+    first_name: str
+    last_name: str
     is_active: bool
     is_admin: bool
     created_at: datetime
@@ -36,6 +37,9 @@ class UserResponse(UserBase):
     class Config:
         from_attributes = True
 
+class SignUpResponse(BaseModel):
+    message: str
+    user: UserResponse
 
 class UserLogin(BaseModel):
     email: EmailStr

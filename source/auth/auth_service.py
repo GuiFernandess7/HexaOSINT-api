@@ -36,7 +36,7 @@ class AuthService:
         ).first()
         
         if existing_user:
-            raise ValueError("User already exists with this email.")
+            raise ValueError("An expected error has occurred.")
         
 
         hashed_password = self.hash_password(user_data.password)

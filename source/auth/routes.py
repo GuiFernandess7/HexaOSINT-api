@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database.session import get_db
 from auth.schemas import (
     UserCreate, UserLogin, Token, UserResponse, 
-    RefreshTokenRequest, LogoutRequest
+    RefreshTokenRequest, LogoutRequest, SignUpResponse
 )
 from auth.auth_service import AuthService
 from auth.config import get_current_active_user
@@ -27,14 +27,17 @@ def get_login_key(request: Request):
         return f"login:{ip_address}"
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=SignUpResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("3 per minute")
 def register_user(request: Request, user_data: UserCreate, db: Session = Depends(get_db)):
     """Register a new user."""
     try:
         auth_service = AuthService(db)
         user = auth_service.create_user(user_data)
-        return {"message": "User registered successfully.", "user": user}
+        return SignUpResponse(
+            message="User registered successfully.", 
+            user=user
+        )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -85,7 +88,7 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
         auth_logger.error(f"Login error for email {login_data.email}: {str(e)}", exc_info=True)
         return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"message": "Incorrect email or password"}
+                content={"message": "Incorrect email or password <2>"}
             )
 
 
