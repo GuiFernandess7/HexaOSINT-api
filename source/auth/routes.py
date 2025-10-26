@@ -53,7 +53,7 @@ def login_user(login_data: UserLogin, request: Request, db: Session = Depends(ge
     try:
         auth_service = AuthService(db)
         user = auth_service.authenticate_user(login_data.email, login_data.password)
-        if not user:
+        if user is None:
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={"message": "Incorrect email or password"}
